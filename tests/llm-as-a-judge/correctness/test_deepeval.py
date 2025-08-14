@@ -23,7 +23,7 @@ CORRECTNESS_THRESHOLD = float(os.getenv("CORRECTNESS_THRESHOLD", "0.5"))
 LOG_FILE = os.getenv("EVAL_LOG_FILE", "deepeval_runs.jsonl")
 TRIM_PREVIEW = int(os.getenv("EVAL_PREVIEW_CHARS", "600"))
 # --- Judge config ---
-JUDGE_MODEL = os.getenv("DEEPEVAL_JUDGE_MODEL", "gpt-4o-mini")
+JUDGEMENT_MODEL = os.getenv("DEEPEVAL_JUDGEMENT_MODEL", "gpt-4o-mini")
 
 
 # --- Helpers ---
@@ -159,7 +159,7 @@ correctness_metric = GEval(
     criteria="Determine if the 'actual output' is correct based on the 'expected output'.",
     evaluation_params=[LLMTestCaseParams.ACTUAL_OUTPUT, LLMTestCaseParams.EXPECTED_OUTPUT],
     threshold=CORRECTNESS_THRESHOLD,
-    model=JUDGE_MODEL,
+    model=JUDGEMENT_MODEL,
 )
 
 # Load samples
@@ -194,12 +194,12 @@ def test_automotive_supply_chain_case(row):
         "ts": datetime.utcnow().isoformat() + "Z",
         "runner": MODEL_RUNNER,
         "generator_model": OLLAMA_MODEL if MODEL_RUNNER == "ollama" else None,
-        "judge_model": JUDGE_MODEL,
+        "judgement_model": JUDGEMENT_MODEL,
         "topic": meta.get("topic"),
         "difficulty": meta.get("difficulty"),
-        "input_preview": (prompt[:TRIM_PREVIEW] + ("…" if len(prompt) > TRIM_PREVIEW else "")),
-        "expected_preview": (expected[:TRIM_PREVIEW] + ("…" if len(expected) > TRIM_PREVIEW else "")),
-        "actual_preview": (actual[:TRIM_PREVIEW] + ("…" if len(actual) > TRIM_PREVIEW else "")),
+        "input": (prompt[:TRIM_PREVIEW] + ("…" if len(prompt) > TRIM_PREVIEW else "")),
+        "expected": (expected[:TRIM_PREVIEW] + ("…" if len(expected) > TRIM_PREVIEW else "")),
+        "actual": (actual[:TRIM_PREVIEW] + ("…" if len(actual) > TRIM_PREVIEW else "")),
         "score": score,
         "threshold": CORRECTNESS_THRESHOLD,
         "judge_reason": reason,

@@ -1,0 +1,8 @@
+.deepeval
+.env
+bin/
+lib/
+logs/deepeval_runs.jsonl
+myenv
+pyvenv.cfg
+
