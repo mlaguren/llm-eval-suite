@@ -2,7 +2,7 @@
 .env
 bin/
 lib/
-logs/deepeval_runs.jsonl
+logs/*.jsonl
 myenv
 pyvenv.cfg
 
