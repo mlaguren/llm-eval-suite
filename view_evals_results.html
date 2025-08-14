@@ -1,0 +1,467 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>JSONL Eval Report</title>
+  <style>
+    :root {
+      --bg: #0b1220;
+      --card: #121a2b;
+      --muted: #94a3b8;
+      --text: #e5e7eb;
+      --accent: #60a5fa;
+      --accent-2: #22d3ee;
+      --border: #1f2937;
+      --danger: #ef4444;
+      --success: #22c55e;
+      --warning: #f59e0b;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 2rem;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+      background: linear-gradient(120deg, var(--bg), #121827 50%, #0b1220);
+      color: var(--text);
+    }
+    h1 { margin: 0 0 0.75rem 0; font-size: 1.6rem; letter-spacing: 0.2px; }
+    p.sub { margin: 0 0 1.25rem 0; color: var(--muted); }
+    .bar {
+      display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap;
+      background: var(--card); border: 1px solid var(--border);
+      padding: 0.75rem; border-radius: 14px;
+    }
+    input[type=file] {
+      color: var(--text);
+      background: #0f172a;
+      border: 1px dashed #334155;
+      padding: 0.4rem 0.6rem;
+      border-radius: 10px;
+      cursor: pointer;
+      max-width: 100%;
+    }
+    .btn {
+      border: 1px solid #334155; background: #0f172a;
+      padding: 0.5rem 0.8rem; color: var(--text);
+      border-radius: 10px; cursor: pointer;
+    }
+    .btn:hover { border-color: var(--accent); }
+    .pill {
+      font-size: 0.75rem; padding: 0.15rem 0.5rem; border-radius: 999px;
+      border: 1px solid #334155; color: var(--muted);
+    }
+
+    .table-wrap {
+      margin-top: 1rem;
+      background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+      overflow: hidden;
+    }
+    table {
+      width: 100%; border-collapse: collapse; table-layout: fixed;
+    }
+    thead th {
+      position: sticky; top: 0;
+      background: #0e1526;
+      padding: 0.7rem 0.6rem; text-align: left; font-weight: 600; font-size: 0.9rem;
+      border-bottom: 1px solid var(--border); user-select: none; cursor: pointer;
+    }
+    tbody td {
+      padding: 0.55rem 0.6rem; border-bottom: 1px solid var(--border); vertical-align: top;
+      font-size: 0.9rem; color: #dbeafe;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    tbody tr:hover { background: rgba(96,165,250,.06); }
+    .center { text-align: center; }
+    .right { text-align: right; }
+    .status-pass { color: var(--success); font-weight: 600; }
+    .status-fail { color: var(--danger); font-weight: 600; }
+    .status-warn { color: var(--warning); font-weight: 600; }
+
+    .empty {
+      text-align: center; color: var(--muted); padding: 2rem;
+    }
+
+    .tag { font-size: 0.75rem; padding: 2px 8px; border-radius: 999px; border: 1px solid #334155; }
+    .tag.low { color: #10b981; border-color: #10b98145; }
+    .tag.medium { color: #f59e0b; border-color: #f59e0b45; }
+    .tag.high { color: #ef4444; border-color: #ef444445; }
+
+    .modal-backdrop {
+      position: fixed; inset: 0; background: rgba(2,6,23,.7);
+      display: none; align-items: center; justify-content: center; padding: 1rem; z-index: 50;
+    }
+    .modal {
+      background: #0e1627; border: 1px solid var(--border);
+      width: min(980px, 96vw); max-height: 90vh; overflow: auto;
+      border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.45);
+      padding: 1rem;
+    }
+    .modal header {
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+      padding-bottom: 0.5rem; border-bottom: 1px dashed #334155; margin-bottom: 0.5rem;
+    }
+    .modal h3 { margin: 0; font-size: 1.1rem; }
+    .kv {
+      display: grid; grid-template-columns: 120px 1fr; gap: 0.5rem 0.75rem; align-items: start;
+      font-size: 0.9rem; color: var(--muted); margin-bottom: 0.75rem;
+    }
+    .codebox {
+      background: #0b1120; border: 1px solid #243040; border-radius: 12px; padding: 0.75rem;
+      font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; color: #cbd5e1;
+      white-space: pre-wrap; word-break: break-word; line-height: 1.35;
+    }
+    .row-actions {
+      display: flex; gap: 0.4rem; justify-content: center;
+    }
+    .icon-btn {
+      background: transparent; border: 1px solid #334155; border-radius: 8px; padding: 0.25rem 0.45rem; cursor: pointer; color: var(--text);
+    }
+    .icon-btn:hover { border-color: var(--accent-2); }
+    .controls {
+      display: flex; gap: .5rem; align-items: center; margin-left: auto;
+    }
+    input[type="search"] {
+      background: #0b1120; border: 1px solid #263247; color: var(--text);
+      padding: .45rem .6rem; border-radius: 10px; min-width: 260px;
+    }
+    .count { color: var(--muted); font-size: .9rem; }
+    .sortable:after {
+      content: " ⇅";
+      color: #64748b; font-weight: 400; font-size: 0.85rem;
+    }
+    .sorted-asc:after { content: " ↑"; color: var(--accent); }
+    .sorted-desc:after { content: " ↓"; color: var(--accent); }
+    @media (max-width: 920px) {
+      .optional { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Evals Results Report</h1>
+  <p class="sub">Upload a <code>.jsonl</code> file where each line is a JSON object. We'll render a sortable report. Click a row's “View” to inspect the full <em>input</em>, <em>expected</em>, and <em>actual</em>.</p>
+
+  <div class="bar">
+    <input id="file" type="file" accept=".jsonl,.txt" />
+    <span class="pill" id="loaded">No file loaded</span>
+    <div class="controls">
+      <input id="search" type="search" placeholder="Filter by text…" />
+      <span class="count" id="count"></span>
+      <button class="btn" id="exportCsv" title="Export table rows to CSV">Export CSV</button>
+    </div>
+  </div>
+
+  <div class="table-wrap" id="tableWrap">
+    <div class="empty" id="empty">No data yet. Choose a file above.</div>
+    <table id="table" style="display:none">
+      <thead>
+        <tr>
+          <th class="sortable" data-key="idx">#</th>
+          <th class="sortable" data-key="difficulty">Difficulty</th>
+          <th class="sortable" data-key="score">Score</th>
+          <th class="sortable" data-key="threshold">Threshold</th>
+          <th class="optional">Status</th>
+          <th class="optional">Model</th>
+          <th>Input (truncated)</th>
+          <th>Expected (truncated)</th>
+          <th>Actual (truncated)</th>
+          <th class="center">Actions</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="modal-backdrop" id="backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <header>
+        <h3 id="modalTitle">Row details</h3>
+        <button class="btn" id="closeModal">Close</button>
+      </header>
+      <div class="kv"><div>Index</div><div id="m-idx"></div></div>
+      <div class="kv"><div>Difficulty</div><div id="m-difficulty"></div></div>
+      <div class="kv"><div>Score</div><div id="m-score"></div></div>
+      <div class="kv"><div>Threshold</div><div id="m-threshold"></div></div>
+      <div class="kv"><div>Status</div><div id="m-status"></div></div>
+      <div class="kv"><div>Model</div><div id="m-model"></div></div>
+      <h4>Input</h4>
+      <div class="codebox" id="m-input"></div>
+      <h4>Expected</h4>
+      <div class="codebox" id="m-expected"></div>
+      <h4>Actual</h4>
+      <div class="codebox" id="m-actual"></div>
+      <h4>Raw JSON</h4>
+      <div class="codebox" id="m-raw"></div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const fileEl = document.getElementById('file');
+  const loadedEl = document.getElementById('loaded');
+  const emptyEl = document.getElementById('empty');
+  const table = document.getElementById('table');
+  const tbody = document.getElementById('tbody');
+  const searchEl = document.getElementById('search');
+  const countEl = document.getElementById('count');
+  const exportCsvBtn = document.getElementById('exportCsv');
+
+  const backdrop = document.getElementById('backdrop');
+  const closeModalBtn = document.getElementById('closeModal');
+
+  const modalFields = {
+    idx: document.getElementById('m-idx'),
+    difficulty: document.getElementById('m-difficulty'),
+    score: document.getElementById('m-score'),
+    threshold: document.getElementById('m-threshold'),
+    status: document.getElementById('m-status'),
+    model: document.getElementById('m-model'),
+    input: document.getElementById('m-input'),
+    expected: document.getElementById('m-expected'),
+    actual: document.getElementById('m-actual'),
+    raw: document.getElementById('m-raw'),
+  };
+
+  /** State */
+  let rows = [];          // parsed data
+  let viewRows = [];      // filtered/sorted
+  let sortKey = null;
+  let sortDir = 1;        // 1 asc, -1 desc
+
+  const DIFF_ORDER = { low: 1, medium: 2, med: 2, high: 3 };
+  const asNum = (v) => (v == null || v === "" || Number.isNaN(Number(v))) ? null : Number(v);
+  const safe = (s) => (s==null ? "" : String(s));
+  const trunc = (s, n=80) => {
+    s = safe(s);
+    if (s.length <= n) return s;
+    return s.slice(0, n-1) + "…";
+  };
+
+  fileEl.addEventListener('change', async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+
+    loadedEl.textContent = `Loaded: ${file.name}`;
+    const text = await file.text();
+    const lines = text.split(/\r?\n/).filter(l => l.trim().length > 0);
+
+    rows = [];
+    for (let i=0; i<lines.length; i++) {
+      const line = lines[i];
+      try {
+        const obj = JSON.parse(line);
+        rows.push(normalize(obj, i));
+      } catch (err) {
+        // Keep a placeholder for visibility
+        rows.push({
+          idx: i+1, difficulty: null, score: null, threshold: null, status: "Parse Error",
+          model: "", test: "", input: "", expected: "", actual: "",
+          raw: line, _error: String(err)
+        });
+      }
+    }
+    viewRows = rows.slice();
+    sortKey = null; // reset sort
+    render();
+  });
+
+  function normalize(obj, index) {
+    // Try to map common fields. Flexible for varied schemas.
+    const get = (o, path) => path.split('.').reduce((v, k) => (v && v[k] != null) ? v[k] : null, o);
+
+    const difficultyRaw = get(obj, 'difficulty') ?? get(obj, 'metadata.difficulty') ?? get(obj, 'meta.difficulty');
+    const difficulty = difficultyRaw ? String(difficultyRaw).toLowerCase() : null;
+
+    const score = asNum(get(obj, 'score') ?? get(obj, 'metrics.score') ?? get(obj, 'result.score'));
+    const threshold = asNum(get(obj, 'threshold') ?? get(obj, 'metrics.threshold') ?? get(obj, 'config.threshold'));
+
+    const model = get(obj, 'model') ?? get(obj, 'metadata.model') ?? get(obj, 'config.model') ?? "";
+
+    const input = get(obj, 'input') ?? get(obj, 'prompt') ?? get(obj, 'data.input') ?? "";
+    const expected = get(obj, 'expected') ?? get(obj, 'reference') ?? get(obj, 'data.expected') ?? "";
+    const actual = get(obj, 'actual') ?? get(obj, 'output') ?? get(obj, 'response') ?? "";
+
+    let status = "";
+    if (score == null || threshold == null) status = "";
+    else if (score >= threshold) status = "PASS";
+    else status = "FAIL";
+
+    return {
+      idx: index + 1,
+      difficulty,
+      score,
+      threshold,
+      status,
+      model: safe(model),
+      input: safe(input),
+      expected: safe(expected),
+      actual: safe(actual),
+      raw: JSON.stringify(obj, null, 2)
+    };
+  }
+
+  function render() {
+    // Filter
+    const q = searchEl.value.trim().toLowerCase();
+    const filtered = q ? rows.filter(r => (
+      safe(r.input).toLowerCase().includes(q) ||
+      safe(r.expected).toLowerCase().includes(q) ||
+      safe(r.actual).toLowerCase().includes(q) ||
+      safe(r.model).toLowerCase().includes(q) ||
+      safe(r.difficulty).toLowerCase().includes(q)
+    )) : rows;
+
+    viewRows = filtered;
+
+    // Sort
+    if (sortKey) {
+      const k = sortKey;
+      viewRows.sort((a, b) => {
+        const av = a[k], bv = b[k];
+        // custom difficulty ordering
+        if (k === 'difficulty') {
+          const ai = DIFF_ORDER[ String(av||'').toLowerCase() ] ?? 999;
+          const bi = DIFF_ORDER[ String(bv||'').toLowerCase() ] ?? 999;
+          return (ai - bi) * sortDir || (a.idx - b.idx);
+        }
+        // numeric sort if both are numbers
+        if (typeof av === 'number' && typeof bv === 'number') {
+          if (av === bv) return a.idx - b.idx;
+          return (av - bv) * sortDir;
+        }
+        // string fallback
+        const as = safe(av).toLowerCase();
+        const bs = safe(bv).toLowerCase();
+        if (as === bs) return a.idx - b.idx;
+        return (as < bs ? -1 : 1) * sortDir;
+      });
+    }
+
+    // Render rows
+    tbody.innerHTML = viewRows.map(r => {
+      const diffClass = r.difficulty ? `tag ${r.difficulty}` : 'tag';
+      const statusClass = r.status === 'PASS' ? 'status-pass' : (r.status === 'FAIL' ? 'status-fail' : 'status-warn');
+      return `<tr>
+        <td class="right">${r.idx}</td>
+        <td><span class="${diffClass}">${r.difficulty ?? '-'}</span></td>
+        <td class="right">${r.score ?? '-'}</td>
+        <td class="right">${r.threshold ?? '-'}</td>
+        <td class="optional ${statusClass}">${r.status || '-'}</td>
+        <td class="optional">${trunc(r.model, 32)}</td>
+        <td title="${escapeHtml(r.input)}">${trunc(r.input, 80)}</td>
+        <td title="${escapeHtml(r.expected)}">${trunc(r.expected, 80)}</td>
+        <td title="${escapeHtml(r.actual)}">${trunc(r.actual, 80)}</td>
+        <td class="center">
+          <div class="row-actions">
+            <button class="icon-btn" data-action="view" data-idx="${r.idx}" title="View full details">View</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+
+    const total = rows.length;
+    countEl.textContent = viewRows.length ? `${viewRows.length} / ${total}` : total ? `0 / ${total}` : '';
+    emptyEl.style.display = rows.length ? 'none' : 'block';
+    table.style.display = rows.length ? 'table' : 'none';
+    markSortHeader();
+  }
+
+  function markSortHeader() {
+    const ths = document.querySelectorAll('thead th.sortable');
+    ths.forEach(th => {
+      th.classList.remove('sorted-asc', 'sorted-desc');
+      const key = th.getAttribute('data-key');
+      if (key === sortKey) {
+        th.classList.add(sortDir === 1 ? 'sorted-asc' : 'sorted-desc');
+      }
+    });
+  }
+
+  function openModal(row) {
+    modalFields.idx.textContent = row.idx;
+    modalFields.difficulty.textContent = row.difficulty ?? '-';
+    modalFields.score.textContent = row.score ?? '-';
+    modalFields.threshold.textContent = row.threshold ?? '-';
+    modalFields.status.textContent = row.status || '-';
+    modalFields.model.textContent = row.model || '-';
+    modalFields.input.textContent = row.input || '';
+    modalFields.expected.textContent = row.expected || '';
+    modalFields.actual.textContent = row.actual || '';
+    modalFields.raw.textContent = row.raw || '';
+
+    backdrop.style.display = 'flex';
+    backdrop.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeModal() {
+    backdrop.style.display = 'none';
+    backdrop.setAttribute('aria-hidden', 'true');
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, s => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'
+    }[s]));
+  }
+
+  // Sorting
+  document.querySelectorAll('thead th.sortable').forEach(th => {
+    th.addEventListener('click', () => {
+      const key = th.getAttribute('data-key');
+      if (sortKey === key) sortDir = -sortDir;
+      else { sortKey = key; sortDir = 1; }
+      render();
+    });
+  });
+
+  // Row action delegation
+  tbody.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-action]');
+    if (!btn) return;
+    const idx = Number(btn.getAttribute('data-idx'));
+    const row = rows.find(r => r.idx === idx);
+    if (!row) return;
+    if (btn.dataset.action === 'view') {
+      openModal(row);
+    }
+  });
+
+  // Modal close
+  closeModalBtn.addEventListener('click', closeModal);
+  backdrop.addEventListener('click', (e) => {
+    if (e.target === backdrop) closeModal();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  // Search filter
+  searchEl.addEventListener('input', render);
+
+  // Export CSV
+  exportCsvBtn.addEventListener('click', () => {
+    if (!viewRows.length) return;
+    const headers = ['idx','difficulty','score','threshold','status','model','input','expected','actual'];
+    const lines = [headers.join(',')];
+    for (const r of viewRows) {
+      const vals = headers.map(h => {
+        let v = r[h];
+        if (v == null) v = '';
+        v = String(v);
+        // Quote if needed
+        if (/[",\n]/.test(v)) v = '"' + v.replace(/"/g, '""') + '"';
+        return v;
+      });
+      lines.push(vals.join(','));
+    }
+    const blob = new Blob([lines.join('\n')], {type: 'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'jsonl_report.csv';
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+[
+  {
+    "input": "Summarize the following test case: The user logs in, searches for a product, and adds it to cart.",
+    "expected": "A short step-by-step summary without unnecessary detail."
+  },
+  {
+    "input": "Summarize this news headline: 'Scientists discover new exoplanet that may be habitable.'",
+    "expected": "One or two sentences summarizing the discovery."
+  },
+  {
+    "input": "Summarize the plot of Romeo and Juliet in 3 sentences.",
+    "expected": "Brief summary including main characters, conflict, and ending."
+  },
+  {
+    "input": "Summarize the benefits of cloud computing in under 60 words.",
+    "expected": "Short, high-level explanation covering cost savings, scalability, and flexibility."
+  },
+  {
+    "input": "Explain the concept of test-driven development in under 50 words.",
+    "expected": "Short definition covering the idea of writing tests before code."
+  },
+  {
+    "input": "Explain how photosynthesis works in one short paragraph.",
+    "expected": "Brief but complete explanation of photosynthesis."
+  },
+  {
+    "input": "Explain how to change a flat tire in 5 steps.",
+    "expected": "Concise numbered list with key steps."
+  },
+  {
+    "input": "Explain how blockchain works in 3\u20134 sentences.",
+    "expected": "Compact description of blockchain structure and purpose."
+  },
+  {
+    "input": "Describe how to create a GitHub repository in 3 sentences.",
+    "expected": "Short, clear instruction without extra commentary."
+  },
+  {
+    "input": "Describe the rules of chess in under 100 words.",
+    "expected": "Concise list of chess rules without fluff."
+  },
+  {
+    "input": "Write a quick recipe for making scrambled eggs.",
+    "expected": "Brief cooking steps without unnecessary detail."
+  },
+  {
+    "input": "List the 5 stages of the project management lifecycle with a one-line description for each.",
+    "expected": "Compact bullet points, no long explanations."
+  }
+]
