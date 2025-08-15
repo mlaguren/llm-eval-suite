@@ -130,6 +130,7 @@ opentelemetry-exporter-otlp-proto-grpc==1.36.0
 opentelemetry-proto==1.36.0
 opentelemetry-sdk==1.36.0
 opentelemetry-semantic-conventions==0.57b0
+# opentracing==2.4.0
 opt_einsum==3.4.0
 optree==0.17.0
 orjson==3.11.2
@@ -191,7 +192,7 @@ sortedcontainers==2.4.0
 spacy==3.8.7
 spacy-legacy==3.0.12
 spacy-loggers==1.0.5
-spacy-universal-sentence-encoder==0.4.6
+spacy_universal_sentence_encoder==0.4.6
 SQLAlchemy==2.0.43
 srsly==2.5.1
 sseclient-py==1.8.0

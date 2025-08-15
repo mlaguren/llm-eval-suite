@@ -13,6 +13,6 @@
               ollama --version
               python3 -m venv gh-runner
               source gh-runner/bin/activate
-              python3 -m pip install --upgrade pip
+              python3.9 -m pip install --upgrade pip
               pip install -r requirements.txt
               pytest --version
