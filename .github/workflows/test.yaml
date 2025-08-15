@@ -9,12 +9,31 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install TensorFlow under Rosetta
+      - name: Set up Python venv
         run: |
-          arch -x86_64 python3 -m venv gh-runner
+          python3 -m venv gh-runner
           source gh-runner/bin/activate
-          arch -x86_64 python -m pip install --upgrade pip setuptools wheel
-          arch -x86_64 pip install tensorflow==2.19.0
+          python -m pip install --upgrade pip setuptools wheel
+
+      # Cache wheels folder so we don’t redownload every run
+      - name: Cache wheels
+        uses: actions/cache@v4
+        with:
+          path: wheels
+          key: tensorflow-wheel-${{ runner.os }}-py${{ steps.python-version.outputs.python-version }}
+      
+      # Download TensorFlow wheel only if not cached
+      - name: Download TensorFlow wheel
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p wheels
+          # Replace URL below with your prebuilt macOS arm64 wheel location
+          curl -L -o wheels/tensorflow.whl "https://example.com/tensorflow-2.19.0-cp39-cp39-macosx_11_0_arm64.whl"
+
+      - name: Install dependencies
+        run: |
+          source gh-runner/bin/activate
+          pip install wheels/tensorflow.whl
           pip install -r requirements.txt
 
       - name: Run tests
