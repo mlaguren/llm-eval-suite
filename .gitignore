@@ -1,8 +1,14 @@
 .deepeval
 .env
+.pytest_cache/
+.venv/
+__pycache__/
 bin/
+env/
 lib/
 logs/*.jsonl
 myenv
 pyvenv.cfg
+tmp/
+venv/
 
