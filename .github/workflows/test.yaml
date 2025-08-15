@@ -1,21 +1,23 @@
-    name: My Self-Hosted Workflow
+name: My Self-Hosted Workflow
 
-    on: [push]
+on: [push]
 
-    jobs:
-      build:
-        runs-on: self-hosted # or a custom label like 'my-linux-runner'
-        steps:
-          - name: Checkout code
-            uses: actions/checkout@v4
-          - name: Run custom script
-            run: |
-              ollama --version
-              python3 -m venv gh-runner
-              source gh-runner/bin/activate
-              which python
-              python --version
-              python -m pip install --upgrade pip setuptools wheel
-              pip --version
-              pip install -r requirements.txt
-              pytest --junit-xml=report.xml
+jobs:
+  build:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install TensorFlow under Rosetta
+        run: |
+          arch -x86_64 python3 -m venv gh-runner
+          source gh-runner/bin/activate
+          arch -x86_64 python -m pip install --upgrade pip setuptools wheel
+          arch -x86_64 pip install tensorflow==2.19.0
+          pip install -r requirements.txt
+
+      - name: Run tests
+        run: |
+          source gh-runner/bin/activate
+          pytest --junit-xml=report.xml
