@@ -44,7 +44,7 @@ OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3")
 
 # --- JSONL logging config ---
-LOG_PATH = Path(os.getenv("LOG_PATH", "logs/openevals_automotive.jsonl"))
+LOG_PATH = Path(os.getenv("OPEN_EVAL_LOG_FILE", "logs/open_evals_runs.jsonl"))
 SUITE_NAME = os.getenv("SUITE_NAME", "automotive_supply_chain")
 LOG_TRUNCATE = os.getenv("LOG_TRUNCATE", "true").lower() == "true"
 LOG_SCHEMA_VERSION = 2
