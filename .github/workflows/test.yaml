@@ -17,18 +17,20 @@ jobs:
             arch -x86_64 /usr/bin/python3 -m venv gh-runner
             source gh-runner/bin/activate
             arch -x86_64 python -m pip install --upgrade pip setuptools wheel
+            echo "PYTHON_CMD=arch -x86_64 python" >> $GITHUB_ENV
           else
             python3 -m venv gh-runner
             source gh-runner/bin/activate
             python -m pip install --upgrade pip setuptools wheel
+            echo "PYTHON_CMD=python" >> $GITHUB_ENV
           fi
 
       - name: Install dependencies
         run: |
           source gh-runner/bin/activate
-          pip install -r requirements.txt
+          $PYTHON_CMD -m pip install -r requirements.txt
 
       - name: Run tests
         run: |
           source gh-runner/bin/activate
-          pytest --junit-xml=report.xml
+          $PYTHON_CMD -m pytest --junit-xml=report.xml
