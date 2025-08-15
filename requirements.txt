@@ -200,12 +200,7 @@ tabulate==0.9.0
 tenacity==9.1.2
 tensorboard==2.19.0
 tensorboard-data-server==0.7.2
-# Linux & Windows can get the latest TensorFlow
-tensorflow==2.19.0; platform_system != "Darwin"
-
-# macOS (both Intel & ARM) uses the latest available version
-tensorflow==2.16.2; platform_system == "Darwin"
-
+tensorflow==2.19.0
 tensorflow-hub==0.16.1
 tensorflow-io-gcs-filesystem==0.37.1
 termcolor==3.1.0
