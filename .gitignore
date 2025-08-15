@@ -1,6 +1,6 @@
 .deepeval
 .env
-logs/deepeval_runs.jsonl
+logs/*.jsonl
 .venv/
 venv/
 env/

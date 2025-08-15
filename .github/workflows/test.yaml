@@ -1,0 +1,14 @@
+name: Self Hosted Test
+
+on [push]
+
+jobs:
+  build:
+    runs-on: self-Hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Check connection
+        run: |
+          hostname
+          ollama --version
