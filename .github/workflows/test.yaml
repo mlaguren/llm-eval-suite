@@ -5,34 +5,28 @@ on: [push]
 jobs:
   build:
     runs-on: self-hosted
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Cache wheels directory
-      - name: Cache wheels
-        uses: actions/cache@v4
-        with:
-          path: wheels
-          key: tensorflow-wheels-${{ runner.os }}-${{ hashFiles('requirements.txt') }}
-
-      - name: Set up Python venv
+      - name: Setup Python venv (Rosetta if macOS ARM)
         run: |
-          python3 -m venv gh-runner
-          source gh-runner/bin/activate
-          python -m pip install --upgrade pip setuptools wheel
-
-          # Install TensorFlow from cached wheel or download if missing
-          if [ ! -f wheels/tensorflow*whl ]; then
-            echo "Downloading TensorFlow wheel..."
-            pip download tensorflow-macos==2.19.0 --dest wheels
+          if [[ "$(uname)" == "Darwin" && "$(uname -m)" == "arm64" ]]; then
+            echo "Apple Silicon detected — running under Rosetta"
+            arch -x86_64 /usr/bin/python3 -m venv gh-runner
+            source gh-runner/bin/activate
+            arch -x86_64 python -m pip install --upgrade pip setuptools wheel
+          else
+            python3 -m venv gh-runner
+            source gh-runner/bin/activate
+            python -m pip install --upgrade pip setuptools wheel
           fi
 
-          # Install TensorFlow from local wheels folder
-          pip install tensorflow-macos==2.19.0 --find-links=./wheels
-
-          # Install remaining requirements (but skip tensorflow to avoid re-fetching)
-          pip install -r <(grep -v 'tensorflow' requirements.txt)
+      - name: Install dependencies
+        run: |
+          source gh-runner/bin/activate
+          pip install -r requirements.txt
 
       - name: Run tests
         run: |
