@@ -3,9 +3,10 @@ import os
 import re
 import string
 import subprocess
+import shutil
 from datetime import datetime
 from pathlib import Path
-from typing import Dict, List, Tuple, Any, Optional
+from typing import Dict, List, Tuple, Any
 
 import pytest
 from dotenv import load_dotenv
@@ -14,13 +15,14 @@ from openai import OpenAI
 load_dotenv()
 
 # --- Config ---
+# JSONL dataset shipped in this repo
 DATA_FILE = os.getenv("DATASET_PATH", "data_sets/samples_automotive_supply_chain.jsonl")
 MODEL_RUNNER = os.getenv("MODEL_RUNNER", "ollama")  # ollama | http | noop | openai
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.1:8b")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 APP_ENDPOINT = os.getenv("APP_ENDPOINT", "http://localhost:8000/generate")
 CORRECTNESS_THRESHOLD = float(os.getenv("CORRECTNESS_THRESHOLD", "0.5"))
-LOG_FILE = os.getenv("OPENAI_EVAL_LOG_FILE", "openai_evals_runs.jsonl")
+LOG_FILE = os.getenv("OPENAI_EVAL_LOG_FILE", "logs/openai_evals_runs.jsonl")
 TRIM_PREVIEW = int(os.getenv("EVAL_PREVIEW_CHARS", "600"))
 
 # --- Judge config ---
@@ -57,8 +59,10 @@ def get_model_output(prompt: str) -> str:
                 check=True,
             )
             return res.stdout.decode("utf-8").strip()
+        except FileNotFoundError as e:
+            raise RuntimeError("Ollama binary not found. Install ollama or set MODEL_RUNNER to 'http'/'openai'/'noop'.") from e
         except subprocess.CalledProcessError as e:
-            raise RuntimeError(f"Ollama call failed: {e.stderr.decode('utf-8')}")
+            raise RuntimeError(f"Ollama call failed: {e.stderr.decode('utf-8')}") from e
     elif MODEL_RUNNER == "openai":
         if not client:
             raise RuntimeError("OpenAI client not initialized - check OPENAI_API_KEY")
@@ -205,6 +209,12 @@ def test_automotive_supply_chain_case(row):
     expected = row["ideal"]
     meta = row.get("metadata") or {}
     retrieval_context = row.get("retrieval_context", [])
+
+    # Skip when judge cannot run or generator is unavailable
+    if client is None:
+        pytest.skip("Skipping OpenAI eval: OPENAI_API_KEY not set")
+    if MODEL_RUNNER == "ollama" and shutil.which("ollama") is None:
+        pytest.skip("Skipping: ollama binary not found on PATH")
 
     # 1) get model output
     actual = get_model_output(prompt)
