@@ -22,7 +22,7 @@ OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.1:8b")
 APP_ENDPOINT = os.getenv("APP_ENDPOINT", "http://localhost:8000/generate")
 CORRECTNESS_THRESHOLD = float(os.getenv("CORRECTNESS_THRESHOLD", "0.5"))
 
-LOG_FILE = os.getenv("EVAL_LOG_FILE", "deepeval_runs.jsonl")
+LOG_FILE = os.getenv("DEEP_EVAL_LOG_FILE", "logs/deepeval_runs.jsonl")
 TRIM_PREVIEW = int(os.getenv("EVAL_PREVIEW_CHARS", "600"))
 # --- Judge config ---
 JUDGEMENT_MODEL = os.getenv("DEEPEVAL_JUDGEMENT_MODEL", "gpt-4o-mini")
