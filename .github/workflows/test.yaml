@@ -10,6 +10,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Cache wheels
+        uses: actions/cache@v4
+        with:
+          path: wheels
+          key: ${{ runner.os }}-wheels-${{ hashFiles('requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-wheels-
+
       - name: Setup Python venv (Rosetta if macOS ARM)
         run: |
           if [[ "$(uname)" == "Darwin" && "$(uname -m)" == "arm64" ]]; then
@@ -17,20 +25,23 @@ jobs:
             arch -x86_64 /usr/bin/python3 -m venv gh-runner
             source gh-runner/bin/activate
             arch -x86_64 python -m pip install --upgrade pip setuptools wheel
-            echo "PYTHON_CMD=arch -x86_64 python" >> $GITHUB_ENV
           else
             python3 -m venv gh-runner
             source gh-runner/bin/activate
             python -m pip install --upgrade pip setuptools wheel
-            echo "PYTHON_CMD=python" >> $GITHUB_ENV
           fi
 
-      - name: Install dependencies
+      - name: Install dependencies from cache or PyPI
         run: |
           source gh-runner/bin/activate
-          $PYTHON_CMD -m pip install -r requirements.txt
+          # First, try cached wheels
+          pip install --find-links=./wheels -r requirements.txt || {
+            echo "Wheel not found in cache — downloading from PyPI..."
+            pip download --dest ./wheels -r requirements.txt
+            pip install --find-links=./wheels -r requirements.txt
+          }
 
       - name: Run tests
         run: |
           source gh-runner/bin/activate
-          $PYTHON_CMD -m pytest --junit-xml=report.xml
+          pytest --junit-xml=report.xml
