@@ -10,5 +10,5 @@
             uses: actions/checkout@v4
           - name: Run custom script
             run: |
-              echo "Hello from my self-hosted runner!"
-              # Add your specific commands here
+              ollama --version
+              pytest --version
