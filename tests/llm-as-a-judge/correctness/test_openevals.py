@@ -37,7 +37,7 @@ def coerce_float(value, default: float) -> float:
 DATASET_PATH = Path(os.getenv("DATASET_PATH", "datasets/automotive_supply_chain.jsonl"))
 USE_PRECOMPUTED_OUTPUTS = os.getenv("USE_PRECOMPUTED_OUTPUTS", "true").lower() == "true"
 GLOBAL_MIN_SCORE = env_float("MIN_SCORE", 0.6)
-JUDGE_MODEL = os.getenv("JUDGE_MODEL", "openai:o3-mini")
+JUDGE_MODEL = os.getenv("JUDGEMENT_MODEL", "openai:o3-mini")
 
 # --- Ollama config (for dynamic outputs) ---
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
@@ -178,6 +178,7 @@ def test_case(row):
         print(f"judge_feedback={feedback}")
 
     # --- JSONL log line (HTML-friendly fields) ---
+# --- JSONL log line (HTML-friendly fields) ---
     log_record = {
         "schema_version": LOG_SCHEMA_VERSION,
         "framework": "OpenEvals",
@@ -200,6 +201,9 @@ def test_case(row):
         # Extras for filtering/debugging
         "judge_feedback": feedback,
         "model": JUDGE_MODEL,
+        "judgement_model": JUDGE_MODEL,
+        "judgement_reason": feedback,
+        "generator_model": (None if used_precomputed else OLLAMA_MODEL),
         "sut_model": (None if used_precomputed else OLLAMA_MODEL),
         "used_precomputed": used_precomputed,
         "topic": topic,
