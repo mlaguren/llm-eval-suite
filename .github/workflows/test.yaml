@@ -1,14 +1,14 @@
-name: Self Hosted Test
+    name: My Self-Hosted Workflow
 
-on [push]
+    on: [push]
 
-jobs:
-  build:
-    runs-on: self-Hosted
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Check connection
-        run: |
-          hostname
-          ollama --version
+    jobs:
+      build:
+        runs-on: self-hosted # or a custom label like 'my-linux-runner'
+        steps:
+          - name: Checkout code
+            uses: actions/checkout@v4
+          - name: Run custom script
+            run: |
+              echo "Hello from my self-hosted runner!"
+              # Add your specific commands here
