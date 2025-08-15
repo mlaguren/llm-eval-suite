@@ -1,0 +1,11 @@
+.deepeval
+.env
+logs/deepeval_runs.jsonl
+.venv/
+venv/
+env/
+myenv/
+__pycache__/
+.pytest_cache/
+tmp/
+pyvenv.cfg
