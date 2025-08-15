@@ -11,7 +11,7 @@
           - name: Run custom script
             run: |
               ollama --version
-              python3 -m venv gh-runner
+              python3.9 -m venv gh-runner
               source gh-runner/bin/activate
               which python
               python3.9 -m pip install --upgrade pip
