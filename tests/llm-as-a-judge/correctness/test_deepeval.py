@@ -16,7 +16,7 @@ from deepeval.test_case import LLMTestCase, LLMTestCaseParams
 load_dotenv()
 
 # --- Config ---
-DATA_FILE = os.getenv("DATASET_PATH", "samples_automotive_supply_chain.jsonl")
+DATA_FILE = os.getenv("DATASET_PATH", "sample_automotive_supply_chain.jsonl")
 MODEL_RUNNER = os.getenv("MODEL_RUNNER", "ollama")  # ollama | http | noop
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.1:8b")
 APP_ENDPOINT = os.getenv("APP_ENDPOINT", "http://localhost:8000/generate")
@@ -53,6 +53,7 @@ def get_model_output(prompt: str) -> str:
             raise RuntimeError(f"Ollama call failed: {e.stderr.decode('utf-8')}")
     elif MODEL_RUNNER == "http":
         import requests
+
         try:
             r = requests.post(APP_ENDPOINT, json={"input": prompt}, timeout=60)
             r.raise_for_status()
@@ -63,6 +64,7 @@ def get_model_output(prompt: str) -> str:
             return (data.get("output") or data.get("text") or "").strip()
         except requests.RequestException as e:
             raise RuntimeError(f"HTTP runner failed: {e}") from e
+
     elif MODEL_RUNNER == "noop":
         return ""
     else:
@@ -182,7 +184,6 @@ def test_automotive_supply_chain_case(row):
         pytest.skip("MODEL_RUNNER=noop; skipping external model call.")
     if MODEL_RUNNER == "ollama" and shutil.which("ollama") is None:
         pytest.skip("ollama not installed; install it or switch MODEL_RUNNER.")
- 
     prompt = row["input"]
     expected = row["ideal"]
     meta = row.get("metadata") or {}
