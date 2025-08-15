@@ -107,7 +107,7 @@ markdown-it-py==3.0.0
 MarkupSafe==3.0.2
 matplotlib==3.9.4
 mdurl==0.1.2
-ml_dtypes==0.5.3
+#ml_dtypes==0.5.3
 mock==5.2.0
 monotonic==1.6
 multidict==6.6.4
@@ -146,7 +146,7 @@ posthog==3.25.0
 preshed==3.0.10
 propcache==0.3.2
 proto-plus==1.26.1
-protobuf==5.29.5
+#protobuf==5.29.5
 pyarrow==18.1.0
 pyasn1==0.6.1
 pyasn1_modules==0.4.2
@@ -200,8 +200,12 @@ tabulate==0.9.0
 tenacity==9.1.2
 tensorboard==2.19.0
 tensorboard-data-server==0.7.2
+# Linux & Windows can get the latest TensorFlow
 tensorflow==2.19.0; platform_system != "Darwin"
-tensorflow-macos==2.16.2; platform_system == "Darwin"
+
+# macOS (both Intel & ARM) uses the latest available version
+tensorflow==2.16.2; platform_system == "Darwin"
+
 tensorflow-hub==0.16.1
 tensorflow-io-gcs-filesystem==0.37.1
 termcolor==3.1.0
