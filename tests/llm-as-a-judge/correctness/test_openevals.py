@@ -34,7 +34,7 @@ def coerce_float(value, default: float) -> float:
         return float(default)
 
 # --- Dataset & Judge config ---
-DATASET_PATH = Path(os.getenv("DATASET_PATH", "datasets/automotive_supply_chain.jsonl"))
+DATASET_PATH = Path(os.getenv("DATASET_PATH", "datasets/sample_automotive_supply_chain.jsonl"))
 USE_PRECOMPUTED_OUTPUTS = os.getenv("USE_PRECOMPUTED_OUTPUTS", "true").lower() == "true"
 GLOBAL_MIN_SCORE = env_float("MIN_SCORE", 0.6)
 JUDGE_MODEL = os.getenv("JUDGEMENT_MODEL", "openai:o3-mini")
@@ -128,7 +128,10 @@ def generate_output(task_input: str) -> str:
         raise RuntimeError(f"Ollama request failed: {e}")
 
 # --- Load data & parametrize ---
-DATA = list(read_jsonl(DATASET_PATH))
+try:
+    DATA = list(read_jsonl(DATASET_PATH))
+except FileNotFoundError as e:
+    pytest.skip(str(e) + " (set DATASET_PATH to a valid dataset)", allow_module_level=True)
 
 @pytest.mark.parametrize("row", DATA, ids=[case_id(r) for r in DATA])
 def test_case(row):
