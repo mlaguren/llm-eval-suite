@@ -13,6 +13,8 @@
               ollama --version
               python3 -m venv gh-runner
               source gh-runner/bin/activate
+              which python
               python3.9 -m pip install --upgrade pip
+              pip --version
               pip install -r requirements.txt
-              pytest --version
+              pytest --junit-xml=report.xml
