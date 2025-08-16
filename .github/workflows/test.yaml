@@ -25,9 +25,9 @@ jobs:
 
       - name: Install dependencies (prefer local wheels)
         run: |
-        source gh-runner/bin/activate
-        pip install --no-index --find-links=$HOME/wheels -r requirements.txt || \
-        pip install --find-links=$HOME/wheels --index-url=https://pypi.org/simple -r requirements.txt
+          source gh-runner/bin/activate
+          pip install --no-index --find-links=$HOME/wheels -r requirements.txt || \
+          pip install --find-links=$HOME/wheels --index-url=https://pypi.org/simple -r requirements.txt
 
       - name: Run tests
         run: |
