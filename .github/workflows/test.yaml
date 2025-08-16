@@ -31,15 +31,11 @@ jobs:
             python -m pip install --upgrade pip setuptools wheel
           fi
 
-      - name: Install dependencies from cache or PyPI
+      - name: Install dependencies
         run: |
           source gh-runner/bin/activate
-          # First, try cached wheels
-          pip install --find-links=./wheels -r requirements.txt || {
-            echo "Wheel not found in cache — downloading from PyPI..."
-            pip download --dest ./wheels -r requirements.txt
-            pip install --find-links=./wheels -r requirements.txt
-          }
+          pip install --no-index --find-links=./wheels -r requirements.txt
+
 
       - name: Run tests
         run: |
