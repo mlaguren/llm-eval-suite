@@ -34,7 +34,7 @@ jobs:
       - name: Install dependencies
         run: |
           source gh-runner/bin/activate
-          pip install --no-index --find-links=./wheels -r requirements.txt
+          pip install --find-links=./wheels -r requirements.txt
 
 
       - name: Run tests
