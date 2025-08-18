@@ -8,7 +8,9 @@ from datetime import datetime
 from pathlib import Path
 
 import pytest
-from dotenv import load_dotenv
+
+if os.getenv("CI") != "true" and os.getenv("GITHUB_ACTIONS") != "true":
+    from dotenv import load_dotenv # Load .env only if not in CI/GitHub Actions
 
 pytest.importorskip("deepeval", reason="deepeval not installed; set up eval deps to run this test.")
 from deepeval.metrics import GEval

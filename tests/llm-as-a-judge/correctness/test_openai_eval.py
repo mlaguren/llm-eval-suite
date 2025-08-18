@@ -9,10 +9,10 @@ from pathlib import Path
 from typing import Dict, List, Tuple, Any
 
 import pytest
-from dotenv import load_dotenv
 from openai import OpenAI
 
-load_dotenv()
+if os.getenv("CI") != "true" and os.getenv("GITHUB_ACTIONS") != "true":
+    from dotenv import load_dotenv # Load .env only if not in CI/GitHub Actions
 
 # --- Config ---
 # JSONL dataset shipped in this repo
