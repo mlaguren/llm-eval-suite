@@ -10,5 +10,4 @@ logs/*.jsonl
 myenv
 pyvenv.cfg
 tmp/
-venv/
-
+venv*/
