@@ -15,7 +15,6 @@ if os.getenv("CI") != "true" and os.getenv("GITHUB_ACTIONS") != "true":
 pytest.importorskip("deepeval", reason="deepeval not installed; set up eval deps to run this test.")
 from deepeval.metrics import GEval
 from deepeval.test_case import LLMTestCase, LLMTestCaseParams
-load_dotenv()
 
 # --- Config ---
 DATA_FILE = os.getenv("DATASET_PATH", "data_sets/sample_automotive_supply_chain.jsonl")
