@@ -16,7 +16,7 @@ if os.getenv("CI") != "true" and os.getenv("GITHUB_ACTIONS") != "true":
 
 # --- Config ---
 # JSONL dataset shipped in this repo
-DATA_FILE = os.getenv("DATASET_PATH", "data_sets/samples_automotive_supply_chain.jsonl")
+DATA_FILE = os.getenv("DATASET_PATH", "data_sets/sample_automotive_supply_chain.jsonl")
 MODEL_RUNNER = os.getenv("MODEL_RUNNER", "ollama")  # ollama | http | noop | openai
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.1:8b")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
