@@ -19,7 +19,6 @@ jobs:
           gfortran \
           libopenblas-dev \
           liblapack-dev \
-          && rm -rf /var/lib/apt/lists/*
       - name: Update pip
         run: |
           pip install --upgrade pip setuptools wheel
