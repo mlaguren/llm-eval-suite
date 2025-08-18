@@ -1,0 +1,22 @@
+name: Pytest with Ollama
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: |
+          pip install pytest requests # Or other necessary libraries
+      - name: Run Ollama
+        uses: ai-action/ollama-action@v1
+        with:
+          model: 'llama2' # Specify the model you need
+      - name: Run Pytest tests
+        run: pytest
