@@ -12,6 +12,9 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
+      - name: Update pip
+        run: |
+          pip install --upgrade pip
       - name: Install dependencies
         run: |
           pip install pytest requests # Or other necessary libraries
