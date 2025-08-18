@@ -14,7 +14,7 @@
 
 ### Python Virtual Environment and installing requirements
 
-```python3 -m venv <myvenv>```
+```python3 -m venv --upgrade-deps <myvenv>```
 
 ```source <myenv>/bin/activate```
 
