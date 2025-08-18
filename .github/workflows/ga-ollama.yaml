@@ -14,18 +14,22 @@ jobs:
           python-version: '3.9'
       - name: Install system dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y gfortran libopenblas-dev liblapack-dev
+          sudo apt-get update && apt-get install -y --no-install-recommends \
+          build-essential \
+          gfortran \
+          libopenblas-dev \
+          liblapack-dev \
+          && rm -rf /var/lib/apt/lists/*
       - name: Update pip
         run: |
-          pip install --upgrade pip
+          pip install --upgrade pip setuptools wheel
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
       - name: Run Ollama
         uses: ai-action/ollama-action@v1
         with:
-          model: 'llama2' # Specify the model you need
+          model: 'llama3.1:8b' # Specify the model you need
       - name: Run Pytest tests
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
