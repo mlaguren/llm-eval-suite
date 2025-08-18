@@ -1,6 +1,8 @@
-name: Pytest with Ollama
+name: Evals Test
 
-on: [push]
+on:
+  push:
+    branches: [ integration ]
 
 jobs:
   test:

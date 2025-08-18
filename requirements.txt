@@ -18,7 +18,7 @@ blis==1.3.0
 blobfile==3.0.0
 boto3==1.40.8
 botocore==1.40.8
-braintrust==0.2.2
+braintrust==0.2.3
 cachetools==5.5.2
 catalogue==2.0.10
 certifi==2025.8.3
