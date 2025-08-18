@@ -8,15 +8,16 @@ from datetime import datetime
 from pathlib import Path
 
 import pytest
-from dotenv import load_dotenv
+
+if os.getenv("CI") != "true" and os.getenv("GITHUB_ACTIONS") != "true":
+    from dotenv import load_dotenv # Load .env only if not in CI/GitHub Actions
 
 pytest.importorskip("deepeval", reason="deepeval not installed; set up eval deps to run this test.")
 from deepeval.metrics import GEval
 from deepeval.test_case import LLMTestCase, LLMTestCaseParams
-load_dotenv()
 
 # --- Config ---
-DATA_FILE = os.getenv("DATASET_PATH", "sample_automotive_supply_chain.jsonl")
+DATA_FILE = os.getenv("DATASET_PATH", "data_sets/sample_automotive_supply_chain.jsonl")
 MODEL_RUNNER = os.getenv("MODEL_RUNNER", "ollama")  # ollama | http | noop
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.1:8b")
 APP_ENDPOINT = os.getenv("APP_ENDPOINT", "http://localhost:8000/generate")

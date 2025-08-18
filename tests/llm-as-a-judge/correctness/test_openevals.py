@@ -6,13 +6,14 @@ from pathlib import Path
 from datetime import datetime, timezone
 
 import pytest
-from dotenv import load_dotenv
 import requests
 
 from openevals.llm import create_llm_as_judge
 from openevals.prompts import CORRECTNESS_PROMPT
 
-load_dotenv()
+if os.getenv("CI") != "true" and os.getenv("GITHUB_ACTIONS") != "true":
+    from dotenv import load_dotenv # Load .env only if not in CI/GitHub Actions
+
 
 # --- Config helpers (robust to bad env values) ---
 def env_float(name: str, default: float) -> float:
