@@ -11,10 +11,14 @@ import requests
 from openevals.llm import create_llm_as_judge
 from openevals.prompts import CORRECTNESS_PROMPT
 
+# Load .env locally only; avoid overriding secrets in CI
 if os.getenv("CI") != "true" and os.getenv("GITHUB_ACTIONS") != "true":
-    from dotenv import load_dotenv # Load .env only if not in CI/GitHub Actions
-
-
+    try:
+        from dotenv import load_dotenv
+        load_dotenv(override=False)
+    except ImportError:
+        pass
+    
 # --- Config helpers (robust to bad env values) ---
 def env_float(name: str, default: float) -> float:
     raw = os.getenv(name, str(default))
@@ -35,7 +39,7 @@ def coerce_float(value, default: float) -> float:
         return float(default)
 
 # --- Dataset & Judge config ---
-DATASET_PATH = Path(os.getenv("DATASET_PATH", "datasets/sample_automotive_supply_chain.jsonl"))
+DATASET_PATH = Path(os.getenv("DATASET_PATH", "data_sets/precompute.jsonl"))
 USE_PRECOMPUTED_OUTPUTS = os.getenv("USE_PRECOMPUTED_OUTPUTS", "true").lower() == "true"
 GLOBAL_MIN_SCORE = env_float("MIN_SCORE", 0.6)
 JUDGE_MODEL = os.getenv("JUDGEMENT_MODEL", "openai:o3-mini")

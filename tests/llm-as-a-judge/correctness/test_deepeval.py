@@ -9,8 +9,13 @@ from pathlib import Path
 
 import pytest
 
+# Load .env locally only; avoid overriding secrets in CI
 if os.getenv("CI") != "true" and os.getenv("GITHUB_ACTIONS") != "true":
-    from dotenv import load_dotenv # Load .env only if not in CI/GitHub Actions
+    try:
+        from dotenv import load_dotenv
+        load_dotenv(override=False)
+    except ImportError:
+        pass
 
 pytest.importorskip("deepeval", reason="deepeval not installed; set up eval deps to run this test.")
 from deepeval.metrics import GEval
@@ -219,6 +224,7 @@ def test_automotive_supply_chain_case(row):
         "input": (prompt[:TRIM_PREVIEW] + ("…" if len(prompt) > TRIM_PREVIEW else "")),
         "expected": (expected[:TRIM_PREVIEW] + ("…" if len(expected) > TRIM_PREVIEW else "")),
         "actual": (actual[:TRIM_PREVIEW] + ("…" if len(actual) > TRIM_PREVIEW else "")),
+        "actual_full": actual,
         "score": score,
         "threshold": CORRECTNESS_THRESHOLD,
         "judge_reason": reason,

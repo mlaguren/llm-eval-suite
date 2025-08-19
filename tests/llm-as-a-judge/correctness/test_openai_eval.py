@@ -11,13 +11,20 @@ from typing import Dict, List, Tuple, Any
 import pytest
 from openai import OpenAI
 
+# Load .env locally only; avoid overriding secrets in CI
 if os.getenv("CI") != "true" and os.getenv("GITHUB_ACTIONS") != "true":
-    from dotenv import load_dotenv # Load .env only if not in CI/GitHub Actions
-
+    try:
+        from dotenv import load_dotenv
+        load_dotenv(override=False)
+    except ImportError:
+        pass
+    
 # --- Config ---
 # JSONL dataset shipped in this repo
 DATA_FILE = os.getenv("DATASET_PATH", "data_sets/sample_automotive_supply_chain.jsonl")
 MODEL_RUNNER = os.getenv("MODEL_RUNNER", "ollama")  # ollama | http | noop | openai
+USE_PRECOMPUTED_OUTPUTS = os.getenv("USE_PRECOMPUTED_OUTPUTS", "false").lower() in ("1", "true", "yes")
+
 OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "llama3.1:8b")
 OPENAI_MODEL = os.getenv("OPENAI_MODEL", "gpt-4o-mini")
 APP_ENDPOINT = os.getenv("APP_ENDPOINT", "http://localhost:8000/generate")
@@ -48,7 +55,20 @@ def load_jsonl(path: str):
                 yield json.loads(line)
 
 
-def get_model_output(prompt: str) -> str:
+def get_dataset_or_model_output(row: dict) -> str:
+    """
+    If USE_PRECOMPUTED_OUTPUTS is enabled and the dataset row has an 'output' (or 'actual'),
+    return that. Otherwise, fall back to generating it with the configured model runner.
+    """
+    if USE_PRECOMPUTED_OUTPUTS:
+        if "output" in row and row["output"]:
+            return row["output"].strip()
+        if "actual" in row and row["actual"]:
+            return row["actual"].strip()
+        raise ValueError("USE_PRECOMPUTED_OUTPUTS is set but no 'output' field found in dataset row")
+    # Otherwise run the model
+    return get_model_output(row["input"])
+
     if MODEL_RUNNER == "ollama":
         try:
             res = subprocess.run(
@@ -217,7 +237,7 @@ def test_automotive_supply_chain_case(row):
         pytest.skip("Skipping: ollama binary not found on PATH")
 
     # 1) get model output
-    actual = get_model_output(prompt)
+    actual = get_dataset_or_model_output(row)
 
     # 2) evaluate with OpenAI judge
     score, reason, raw = openai_judge_correctness(prompt, expected, actual, retrieval_context)
